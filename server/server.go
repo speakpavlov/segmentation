@@ -61,7 +61,7 @@ func main() {
 
 	logger.Print("Db initialized")
 
-	http.Handle(segmentationPath, serviceLoader(segmentationHandler(), requestMetrics(logger)))
+	http.Handle(segmentationPath, serviceLoader(segmentationHandler(logger), requestMetrics(logger)))
 
 	logger.Printf("starting sever on :%d", port)
 
