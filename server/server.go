@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/speakpavlov/segmentation"
@@ -21,15 +22,17 @@ const (
 )
 
 var (
-	port    int
-	logfile string
-	ver     bool
+	port     int
+	logfile  string
+	dumpfile string
+	ver      bool
 
 	db *segmentation.Db
 )
 
 func init() {
 	flag.StringVar(&logfile, "logfile", "", "Location of the logfile")
+	flag.StringVar(&dumpfile, "dumpfile", "dump", "Dump file")
 	flag.BoolVar(&ver, "version", false, "Print server version.")
 	flag.IntVar(&port, "port", 9090, "The port to listen on.")
 }
@@ -57,7 +60,18 @@ func main() {
 	//var err error
 	db = segmentation.NewSegmentationDb(segmentation.AntonMedvExpression{})
 
-	//todo add loading from storage
+	data, err := loadDump()
+
+	if err != nil {
+		panic(err)
+	}
+
+	err = json.Unmarshal(data, db.SegmentationList)
+
+	if err != nil {
+		//todo
+		//panic(err)
+	}
 
 	logger.Print("Db initialized")
 

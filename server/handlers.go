@@ -73,13 +73,26 @@ func putHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 
 	data := map[string]interface{}{
 		"segmentation_id": segmentationId,
-		"db":              db.SegmentationList,
 	}
 
 	jsonData, jErr := json.Marshal(data)
 
 	if jErr != nil {
 		errorResponse(jErr, w, l, http.StatusInternalServerError)
+		return
+	}
+
+	dump, sErr := json.Marshal(db.SegmentationList)
+
+	if sErr != nil {
+		errorResponse(sErr, w, l, http.StatusInternalServerError)
+		return
+	}
+
+	dErr := saveDump(dump)
+
+	if dErr != nil {
+		errorResponse(dErr, w, l, http.StatusInternalServerError)
 		return
 	}
 
