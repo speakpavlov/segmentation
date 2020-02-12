@@ -114,7 +114,7 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := map[string]interface{}{
-		"segment": segment,
+		"response": segment.Value,
 	}
 
 	jsonData, jErr := json.Marshal(data)
@@ -136,7 +136,8 @@ func errorResponse(err error, w http.ResponseWriter, request int) {
 	log.Print(err)
 
 	data := map[string]interface{}{
-		"error": err.Error(),
+		"response": false,
+		"error":    err.Error(),
 	}
 
 	jsonData, _ := json.Marshal(data)
