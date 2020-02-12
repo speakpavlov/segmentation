@@ -2,6 +2,8 @@ package segmentation
 
 import (
 	"errors"
+	"log"
+	"strconv"
 )
 
 //Db struct
@@ -29,46 +31,61 @@ type Expression interface {
 	execute(program interface{}, env interface{}) (bool, error)
 }
 
-func NewSegmentationDb(expression Expression) Db {
-	return Db{Expression: expression}
+func NewSegmentationDb(expression Expression) *Db {
+	return &Db{Expression: expression}
 }
 
-func (db *Db) PublishSegmentation(id int, segments []Segment) bool {
+func (db *Db) PublishSegmentation(id int, segments []Segment) (int, error) {
 	//edit or create
 	edited := false
 
 	//compile expression
 	for i := range segments {
+		if segments[i].Expression == "" {
+			//don't need compile bytecode
+			continue
+		}
+
 		program, err := db.Expression.compile(segments[i].Expression)
 
 		if err != nil {
-			return false
+			log.Print(err)
+			return 0, errors.New("Compilation segment #" + strconv.Itoa(i) + " was failed")
 		}
 
 		segments[i].byteCode = program
 	}
 
-	for i := range db.SegmentationList {
-		if db.SegmentationList[i].Id == id {
-			db.SegmentationList[i].Segments = segments
-			edited = true
-			break
+	if id > 0 {
+		for i := range db.SegmentationList {
+			if db.SegmentationList[i].Id == id {
+				db.SegmentationList[i].Segments = segments
+				edited = true
+				break
+			}
 		}
 	}
 
 	if edited != true {
+		//next id, starts with 1
+		id = len(db.SegmentationList) + 1
+
 		db.SegmentationList = append(db.SegmentationList, Segmentation{id, segments})
 	}
 
-	return true
+	return id, nil
 }
 
 func (db *Db) GetSegment(id int, data interface{}) (*Segment, error) {
 	for _, segmentation := range db.SegmentationList {
 		if segmentation.Id == id {
 			for _, segment := range segmentation.Segments {
-				result, err := db.Expression.execute(segment.byteCode, data)
+				//segment without rules
+				if segment.byteCode == nil {
+					return &segment, nil
+				}
 
+				result, err := db.Expression.execute(segment.byteCode, data)
 				if err != nil {
 					return nil, err
 				}
@@ -80,5 +97,5 @@ func (db *Db) GetSegment(id int, data interface{}) (*Segment, error) {
 		}
 	}
 
-	return nil, errors.New("Segment was not found.")
+	return nil, nil
 }
