@@ -23,7 +23,7 @@ type Segment struct {
 	Index      int
 	Expression string
 	Value      string
-	byteCode   interface{}
+	ByteCode   interface{}
 }
 
 type Expression interface {
@@ -53,7 +53,7 @@ func (db *Db) PublishSegmentation(id int, segments []Segment) (int, error) {
 			return 0, errors.New("Compilation segment #" + strconv.Itoa(i) + " was failed")
 		}
 
-		segments[i].byteCode = program
+		segments[i].ByteCode = program
 	}
 
 	if id > 0 {
@@ -81,11 +81,10 @@ func (db *Db) GetSegment(id int, data interface{}) (*Segment, error) {
 		if segmentation.Id == id {
 			for _, segment := range segmentation.Segments {
 				//segment without rules
-				if segment.byteCode == nil {
+				if segment.ByteCode == nil {
 					return &segment, nil
 				}
-
-				result, err := db.Expression.execute(segment.byteCode, data)
+				result, err := db.Expression.execute(segment.ByteCode, data)
 				if err != nil {
 					return nil, err
 				}

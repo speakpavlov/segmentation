@@ -82,19 +82,12 @@ func putHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 		return
 	}
 
-	dump, sErr := json.Marshal(db.SegmentationList)
-
-	if sErr != nil {
-		errorResponse(sErr, w, l, http.StatusInternalServerError)
-		return
-	}
-
-	dErr := saveDump(dump)
-
-	if dErr != nil {
-		errorResponse(dErr, w, l, http.StatusInternalServerError)
-		return
-	}
+	//dErr := Save(dumpfile, db.SegmentationList)
+	//
+	//if dErr != nil {
+	//	errorResponse(dErr, w, l, http.StatusInternalServerError)
+	//	return
+	//}
 
 	successResponse(w, jsonData)
 }

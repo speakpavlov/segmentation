@@ -7,19 +7,19 @@ import (
 func TestSegmentation(t *testing.T) {
 	db := NewSegmentationDb(&AntonMedvExpression{})
 
-	success := db.PublishSegmentation(1, []Segment{
+	_, err := db.PublishSegmentation(1, []Segment{
 		{Index: 1, Expression: "A == 1", Value: "1"},
 		{Index: 2, Expression: "A == 2", Value: "3"},
 		{Index: 3, Expression: "A == 3", Value: "3"},
 	})
 
-	if success == false {
+	if err != nil {
 		t.Errorf("Publish was not unsuccessefully")
 	}
 
-	_, err := db.GetSegment(0, map[string]interface{}{"A": 1})
+	_, sErr := db.GetSegment(0, map[string]interface{}{"A": 1})
 
-	if err == nil {
+	if sErr != nil {
 		t.Errorf("Id 0 has segments")
 	}
 
@@ -37,13 +37,13 @@ func TestSegmentation(t *testing.T) {
 func BenchmarkDbSegments(b *testing.B) {
 	db := NewSegmentationDb(&AntonMedvExpression{})
 
-	success := db.PublishSegmentation(1, []Segment{
+	_, err := db.PublishSegmentation(1, []Segment{
 		{Index: 1, Expression: "A == 1", Value: "1"},
 		{Index: 2, Expression: "A == 2", Value: "3"},
 		{Index: 3, Expression: "A == 3", Value: "3"},
 	})
 
-	if success == false {
+	if err != nil {
 		b.Errorf("Publish was not unsuccessefully")
 	}
 
@@ -63,13 +63,13 @@ func BenchmarkDbSegments(b *testing.B) {
 func BenchmarkDbSegmentsEmpty(b *testing.B) {
 	db := NewSegmentationDb(&AntonMedvExpression{})
 
-	success := db.PublishSegmentation(1, []Segment{
+	_, err := db.PublishSegmentation(1, []Segment{
 		{Index: 1, Expression: "A == 1", Value: "1"},
 		{Index: 2, Expression: "A == 2", Value: "3"},
 		{Index: 3, Expression: "A == 3", Value: "3"},
 	})
 
-	if success == false {
+	if err != nil {
 		b.Errorf("Publish was not unsuccessefully")
 	}
 
