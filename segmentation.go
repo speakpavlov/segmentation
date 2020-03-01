@@ -6,16 +6,9 @@ import (
 	"strconv"
 )
 
-//Db struct
-type Db struct {
-	Expression       Expression
-	SegmentationList []Segmentation
-}
-
 //Segmentation struct
 type Segmentation struct {
-	Id       int
-	Segments []Segment
+	Segments map[string][]Segment
 }
 
 //Segment struct
@@ -26,75 +19,61 @@ type Segment struct {
 	ByteCode   interface{}
 }
 
-type Expression interface {
-	compile(expression string) (interface{}, error)
-	execute(program interface{}, env interface{}) (bool, error)
+var expression MedvExpression
+
+func NewSegmentation() *Segmentation {
+	return &Segmentation{}
 }
 
-func NewSegmentationDb(expression Expression) *Db {
-	return &Db{Expression: expression}
-}
-
-func (db *Db) PublishSegmentation(id int, segments []Segment) (int, error) {
-	//edit or create
-	edited := false
-
+func (seg *Segmentation) UpdateSegments(tag string, segments []Segment) error {
 	//compile expression
 	for i := range segments {
 		if segments[i].Expression == "" {
-			//don't need compile bytecode
+			//don't need compile byte code
 			continue
 		}
 
-		program, err := db.Expression.compile(segments[i].Expression)
+		program, err := expression.compile(segments[i].Expression)
 
 		if err != nil {
 			log.Print(err)
-			return 0, errors.New("Compilation segment #" + strconv.Itoa(i) + " was failed")
+			return errors.New("Compilation segment #" + strconv.Itoa(i) + " was failed")
 		}
 
+		//update byte code
 		segments[i].ByteCode = program
 	}
 
-	if id > 0 {
-		for i := range db.SegmentationList {
-			if db.SegmentationList[i].Id == id {
-				db.SegmentationList[i].Segments = segments
-				edited = true
-				break
-			}
-		}
+	//init
+	if seg.Segments == nil {
+		seg.Segments = map[string][]Segment{}
 	}
 
-	if edited != true {
-		//next id, starts with 1
-		id = len(db.SegmentationList) + 1
+	seg.Segments[tag] = segments
 
-		db.SegmentationList = append(db.SegmentationList, Segmentation{id, segments})
-	}
-
-	return id, nil
+	return nil
 }
 
-func (db *Db) GetSegment(id int, data interface{}) (*Segment, error) {
-	for _, segmentation := range db.SegmentationList {
-		if segmentation.Id == id {
-			for _, segment := range segmentation.Segments {
-				//segment without rules
-				if segment.ByteCode == nil {
-					return &segment, nil
-				}
-				result, err := db.Expression.execute(segment.ByteCode, data)
-				if err != nil {
-					return nil, err
-				}
+func (seg *Segmentation) GetSegments(tag string, data interface{}) ([]Segment, error) {
+	var segments []Segment
 
-				if result {
-					return &segment, nil
-				}
+	if segmentation, ok := seg.Segments[tag]; ok {
+		for _, segment := range segmentation {
+			//segment without rules
+			if segment.ByteCode == nil {
+				segments = append(segments, segment)
+			}
+
+			result, err := expression.execute(segment.ByteCode, data)
+			if err != nil {
+				return nil, err
+			}
+
+			if result {
+				segments = append(segments, segment)
 			}
 		}
 	}
 
-	return nil, nil
+	return segments, nil
 }

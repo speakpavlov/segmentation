@@ -1,0 +1,428 @@
+POST http://localhost:9090/api/v1/segmentation
+Accept: application/json
+Content-Type: application/json
+
+{
+  "tag_id": "tag_1",
+  "data": {
+    "Level": 2,
+    "GPS": 1,
+    "UVS": 5
+  }
+}
+
+
+
+###
+
+PUT http://localhost:9090/api/v1/segmentation
+Accept: application/json
+Content-Type: application/json
+
+{
+  "tag_id": "tag_1",
+  "segments": [
+    {
+      "expression": "Level > 1 && Level < 10 && GPS == 1 && UVS == 5",
+      "value": "{\"key\":1}"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 1 && Level < 10 && GPS == 1 && UVS == 5",
+      "value": "value 1"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 1 && Level < 10 && GPS == 1 && UVS == 5",
+      "value": "value 1"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    },
+    {
+      "expression": "Level > 10 && Level < 20 && GPS == 2 && UVS == 5",
+      "value": "value 2"
+    }
+  ]
+}
+
+###

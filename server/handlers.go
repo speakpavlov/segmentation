@@ -10,6 +10,7 @@ import (
 )
 
 type SegmentationPutInput struct {
+	TagId    string    `json:"tag_id"`
 	Segments []Segment `json:"segments"`
 }
 
@@ -20,14 +21,14 @@ type Segment struct {
 }
 
 type SegmentationGetRequest struct {
-	SegmentationId int         `json:"segmentation_id"`
-	Data           interface{} `json:"data"`
+	TagId string      `json:"tag_id"`
+	Data  interface{} `json:"data"`
 }
 
 func segmentationHandler(l *log.Logger) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
-		case http.MethodGet:
+		case http.MethodPost:
 			getHandler(w, r, l)
 		case http.MethodPut:
 			putHandler(w, r, l)
@@ -64,7 +65,13 @@ func putHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 		index++
 	}
 
-	segmentationId, sErr := db.PublishSegmentation(0, segments)
+	dErr := Save(dumpDirPath+segmentationInput.TagId, segments)
+	if dErr != nil {
+		errorResponse(dErr, w, l, http.StatusInternalServerError)
+		return
+	}
+
+	sErr := seg.UpdateSegments(segmentationInput.TagId, segments)
 
 	if sErr != nil {
 		errorResponse(sErr, w, l, http.StatusBadRequest)
@@ -72,7 +79,7 @@ func putHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 	}
 
 	data := map[string]interface{}{
-		"segmentation_id": segmentationId,
+		"response": "OK",
 	}
 
 	jsonData, jErr := json.Marshal(data)
@@ -81,13 +88,6 @@ func putHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 		errorResponse(jErr, w, l, http.StatusInternalServerError)
 		return
 	}
-
-	//dErr := Save(dumpfile, db.SegmentationList)
-	//
-	//if dErr != nil {
-	//	errorResponse(dErr, w, l, http.StatusInternalServerError)
-	//	return
-	//}
 
 	successResponse(w, jsonData)
 }
@@ -100,31 +100,37 @@ func getHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 	}
 
 	var segmentationInput SegmentationGetRequest
-	mErr := json.Unmarshal(entry, &segmentationInput)
 
+	mErr := json.Unmarshal(entry, &segmentationInput)
 	if mErr != nil {
 		errorResponse(mErr, w, l, http.StatusBadRequest)
 		return
 	}
 
-	segment, sErr := db.GetSegment(segmentationInput.SegmentationId, segmentationInput.Data)
-
+	segments, sErr := seg.GetSegments(segmentationInput.TagId, segmentationInput.Data)
 	if sErr != nil {
 		errorResponse(sErr, w, l, http.StatusBadRequest)
 		return
 	}
 
-	if segment == nil {
-		errorResponse(errors.New("Segment was not found."), w, l, http.StatusNotFound)
+	if len(segments) == 0 {
+		errorResponse(errors.New("Segments was not found."), w, l, http.StatusNotFound)
 		return
 	}
 
+	var result []map[string]interface{}
+	for _, seg := range segments {
+		result = append(result, map[string]interface{}{
+			"index": seg.Index,
+			"value": seg.Value,
+		})
+	}
+
 	data := map[string]interface{}{
-		"response": segment.Value,
+		"response": result,
 	}
 
 	jsonData, jErr := json.Marshal(data)
-
 	if jErr != nil {
 		errorResponse(jErr, w, l, http.StatusInternalServerError)
 		return
@@ -139,7 +145,9 @@ func successResponse(w http.ResponseWriter, jsonData []byte) {
 }
 
 func errorResponse(err error, w http.ResponseWriter, l *log.Logger, request int) {
-	l.Print(err)
+	if request != http.StatusNotFound {
+		l.Print(err)
+	}
 
 	data := map[string]interface{}{
 		"response": false,

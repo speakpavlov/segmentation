@@ -31,7 +31,7 @@ func Save(path string, v interface{}) error {
 // io.Reader.
 // By default, it uses the JSON marshaller.
 var Marshal = func(v interface{}) (io.Reader, error) {
-	b, err := json.MarshalIndent(v, "", "\t")
+	b, err := json.Marshal(v)
 	if err != nil {
 		return nil, err
 	}

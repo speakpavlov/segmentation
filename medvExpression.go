@@ -5,14 +5,14 @@ import (
 	"github.com/antonmedv/expr/vm"
 )
 
-type AntonMedvExpression struct {
+type MedvExpression struct {
 }
 
-func (e AntonMedvExpression) compile(expression string) (interface{}, error) {
+func (e MedvExpression) compile(expression string) (interface{}, error) {
 	return expr.Compile(expression)
 }
 
-func (e AntonMedvExpression) execute(program interface{}, env interface{}) (bool, error) {
+func (e MedvExpression) execute(program interface{}, env interface{}) (bool, error) {
 	result, err := expr.Run(program.(*vm.Program), env)
 
 	if err != nil {

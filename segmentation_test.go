@@ -5,9 +5,9 @@ import (
 )
 
 func TestSegmentation(t *testing.T) {
-	db := NewSegmentationDb(&AntonMedvExpression{})
+	segmentation := NewSegmentation()
 
-	_, err := db.PublishSegmentation(1, []Segment{
+	err := segmentation.UpdateSegments("seg_1", []Segment{
 		{Index: 1, Expression: "A == 1", Value: "1"},
 		{Index: 2, Expression: "A == 2", Value: "3"},
 		{Index: 3, Expression: "A == 3", Value: "3"},
@@ -17,27 +17,29 @@ func TestSegmentation(t *testing.T) {
 		t.Errorf("Publish was not unsuccessefully")
 	}
 
-	_, sErr := db.GetSegment(0, map[string]interface{}{"A": 1})
+	_, sErr := segmentation.GetSegments("seg_0", map[string]interface{}{"A": 1})
 
 	if sErr != nil {
-		t.Errorf("Id 0 has segments")
+		t.Errorf("Id seg_0 has segments")
 	}
 
-	segment2, err2 := db.GetSegment(1, map[string]interface{}{"A": 1})
+	segment2, err2 := segmentation.GetSegments("seg_1", map[string]interface{}{"A": 1})
 
 	if err2 != nil || segment2 == nil {
-		t.Error("Id 1 has not segments")
+		t.Error("seg_1 has not segments")
 	}
 
-	if segment2 != nil && segment2.Value != "1" {
-		t.Error("Segment Id 1 is incorrect")
+	for _, seg := range segment2 {
+		if seg.Value != "1" {
+			t.Error("Segment Id 1 is incorrect")
+		}
 	}
 }
 
 func BenchmarkDbSegments(b *testing.B) {
-	db := NewSegmentationDb(&AntonMedvExpression{})
+	db := NewSegmentation()
 
-	_, err := db.PublishSegmentation(1, []Segment{
+	err := db.UpdateSegments("1", []Segment{
 		{Index: 1, Expression: "A == 1", Value: "1"},
 		{Index: 2, Expression: "A == 2", Value: "3"},
 		{Index: 3, Expression: "A == 3", Value: "3"},
@@ -48,22 +50,22 @@ func BenchmarkDbSegments(b *testing.B) {
 	}
 
 	for i := 0; i < b.N; i++ {
-		segment2, err2 := db.GetSegment(1, map[string]interface{}{"A": 1})
+		segment2, err2 := db.GetSegments("1", map[string]interface{}{"A": 1})
 
 		if err2 != nil || segment2 == nil {
 			b.Error("Id 1 has not segments")
 		}
 
-		if segment2 != nil && segment2.Value != "1" {
+		if segment2 != nil && segment2[0].Value != "1" {
 			b.Error("Segment Id 1 is incorrect")
 		}
 	}
 }
 
 func BenchmarkDbSegmentsEmpty(b *testing.B) {
-	db := NewSegmentationDb(&AntonMedvExpression{})
+	db := NewSegmentation()
 
-	_, err := db.PublishSegmentation(1, []Segment{
+	err := db.UpdateSegments("1", []Segment{
 		{Index: 1, Expression: "A == 1", Value: "1"},
 		{Index: 2, Expression: "A == 2", Value: "3"},
 		{Index: 3, Expression: "A == 3", Value: "3"},
@@ -74,9 +76,9 @@ func BenchmarkDbSegmentsEmpty(b *testing.B) {
 	}
 
 	for i := 0; i < b.N; i++ {
-		_, err := db.GetSegment(0, map[string]interface{}{"A": 1})
+		segments, _ := db.GetSegments("0", map[string]interface{}{"A": 1})
 
-		if err == nil {
+		if len(segments) > 0 {
 			b.Errorf("Id 0 has segments")
 		}
 	}
