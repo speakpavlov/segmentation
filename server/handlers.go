@@ -21,15 +21,22 @@ type Segment struct {
 }
 
 type SegmentationGetRequest struct {
-	TagId string      `json:"tag_id"`
-	Data  interface{} `json:"data"`
+	TagId string                 `json:"tag_id"`
+	Data  map[string]interface{} `json:"data"`
+}
+
+//test handler
+func purchaseHandler(l *log.Logger) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		successResponse(w, l, 257)
+	})
 }
 
 func segmentationHandler(l *log.Logger) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodPost:
-			getHandler(w, r, l)
+			postHandler(w, r, l)
 		case http.MethodPut:
 			putHandler(w, r, l)
 		}
@@ -72,27 +79,15 @@ func putHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 	}
 
 	sErr := seg.UpdateSegments(segmentationInput.TagId, segments)
-
 	if sErr != nil {
 		errorResponse(sErr, w, l, http.StatusBadRequest)
 		return
 	}
 
-	data := map[string]interface{}{
-		"response": "OK",
-	}
-
-	jsonData, jErr := json.Marshal(data)
-
-	if jErr != nil {
-		errorResponse(jErr, w, l, http.StatusInternalServerError)
-		return
-	}
-
-	successResponse(w, jsonData)
+	successResponse(w, l, "OK")
 }
 
-func getHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
+func postHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 	entry, rErr := ioutil.ReadAll(r.Body)
 	if rErr != nil {
 		errorResponse(rErr, w, l, http.StatusBadRequest)
@@ -126,36 +121,5 @@ func getHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 		})
 	}
 
-	data := map[string]interface{}{
-		"response": result,
-	}
-
-	jsonData, jErr := json.Marshal(data)
-	if jErr != nil {
-		errorResponse(jErr, w, l, http.StatusInternalServerError)
-		return
-	}
-
-	successResponse(w, jsonData)
-}
-
-func successResponse(w http.ResponseWriter, jsonData []byte) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonData)
-}
-
-func errorResponse(err error, w http.ResponseWriter, l *log.Logger, request int) {
-	if request != http.StatusNotFound {
-		l.Print(err)
-	}
-
-	data := map[string]interface{}{
-		"response": false,
-		"error":    err.Error(),
-	}
-
-	jsonData, _ := json.Marshal(data)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(request)
-	w.Write(jsonData)
+	successResponse(w, l, result)
 }

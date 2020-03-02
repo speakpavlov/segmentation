@@ -54,8 +54,9 @@ func (seg *Segmentation) UpdateSegments(tag string, segments []Segment) error {
 	return nil
 }
 
-func (seg *Segmentation) GetSegments(tag string, data interface{}) ([]Segment, error) {
+func (seg *Segmentation) GetSegments(tag string, data map[string]interface{}) ([]Segment, error) {
 	var segments []Segment
+	env := NewEnv(data)
 
 	if segmentation, ok := seg.Segments[tag]; ok {
 		for _, segment := range segmentation {
@@ -64,7 +65,7 @@ func (seg *Segmentation) GetSegments(tag string, data interface{}) ([]Segment, e
 				segments = append(segments, segment)
 			}
 
-			result, err := expression.execute(segment.ByteCode, data)
+			result, err := expression.execute(segment.ByteCode, env)
 			if err != nil {
 				return nil, err
 			}

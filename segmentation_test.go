@@ -29,10 +29,8 @@ func TestSegmentation(t *testing.T) {
 		t.Error("seg_1 has not segments")
 	}
 
-	for _, seg := range segment2 {
-		if seg.Value != "1" {
-			t.Error("Segment Id 1 is incorrect")
-		}
+	if len(segment2) != 1 {
+		t.Error("Segments are incorrect", len(segment2))
 	}
 }
 
