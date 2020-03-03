@@ -31,7 +31,5 @@ func NewEnv(in map[string]interface{}) Env {
 func (e Env) CurlWithUserId(url string, userId int) interface{} {
 	replacedUrl := strings.Replace(url, "{userId}", strconv.Itoa(userId), 1)
 
-	a := e["Curl"].(CurlFunc)(replacedUrl)
-
-	return a
+	return e["Curl"].(CurlFunc)(replacedUrl)
 }

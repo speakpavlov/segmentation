@@ -28,7 +28,7 @@ type SegmentationGetRequest struct {
 //test handler
 func purchaseHandler(l *log.Logger) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		successResponse(w, l, 257)
+		writeSuccess(w, l, 257)
 	})
 }
 
@@ -56,7 +56,7 @@ func putHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 	mErr := json.Unmarshal(entry, &segmentationInput)
 
 	if mErr != nil {
-		errorResponse(mErr, w, l, http.StatusBadRequest)
+		writeError(mErr, w, l, http.StatusBadRequest)
 		return
 	}
 
@@ -74,23 +74,23 @@ func putHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 
 	dErr := Save(dumpDirPath+segmentationInput.TagId, segments)
 	if dErr != nil {
-		errorResponse(dErr, w, l, http.StatusInternalServerError)
+		writeError(dErr, w, l, http.StatusInternalServerError)
 		return
 	}
 
 	sErr := seg.UpdateSegments(segmentationInput.TagId, segments)
 	if sErr != nil {
-		errorResponse(sErr, w, l, http.StatusBadRequest)
+		writeError(sErr, w, l, http.StatusBadRequest)
 		return
 	}
 
-	successResponse(w, l, "OK")
+	writeSuccess(w, l, "OK")
 }
 
 func postHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 	entry, rErr := ioutil.ReadAll(r.Body)
 	if rErr != nil {
-		errorResponse(rErr, w, l, http.StatusBadRequest)
+		writeError(rErr, w, l, http.StatusBadRequest)
 		return
 	}
 
@@ -98,18 +98,18 @@ func postHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 
 	mErr := json.Unmarshal(entry, &segmentationInput)
 	if mErr != nil {
-		errorResponse(mErr, w, l, http.StatusBadRequest)
+		writeError(mErr, w, l, http.StatusBadRequest)
 		return
 	}
 
 	segments, sErr := seg.GetSegments(segmentationInput.TagId, segmentationInput.Data)
 	if sErr != nil {
-		errorResponse(sErr, w, l, http.StatusBadRequest)
+		writeError(sErr, w, l, http.StatusBadRequest)
 		return
 	}
 
 	if len(segments) == 0 {
-		errorResponse(errors.New("Segments was not found."), w, l, http.StatusNotFound)
+		writeError(errors.New("Segments was not found."), w, l, http.StatusNotFound)
 		return
 	}
 
@@ -121,5 +121,31 @@ func postHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 		})
 	}
 
-	successResponse(w, l, result)
+	writeSuccess(w, l, result)
+}
+
+/////
+
+func writeSuccess(w http.ResponseWriter, l *log.Logger, result interface{}) {
+	writeJSON(w, map[string]interface{}{
+		"response": result,
+	})
+}
+
+func writeError(err error, w http.ResponseWriter, l *log.Logger, request int) {
+	if request != http.StatusNotFound {
+		l.Print(err)
+	}
+
+	w.WriteHeader(request)
+
+	writeJSON(w, map[string]interface{}{
+		"response": false,
+		"error":    err.Error(),
+	})
+}
+
+func writeJSON(w http.ResponseWriter, data map[string]interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(data)
 }

@@ -2,6 +2,8 @@ package segmentation
 
 import (
 	"errors"
+	"github.com/antonmedv/expr"
+	"github.com/antonmedv/expr/vm"
 	"log"
 	"strconv"
 )
@@ -19,8 +21,6 @@ type Segment struct {
 	ByteCode   interface{}
 }
 
-var expression MedvExpression
-
 func NewSegmentation() *Segmentation {
 	return &Segmentation{}
 }
@@ -33,7 +33,7 @@ func (seg *Segmentation) UpdateSegments(tag string, segments []Segment) error {
 			continue
 		}
 
-		program, err := expression.compile(segments[i].Expression)
+		program, err := expr.Compile(segments[i].Expression)
 
 		if err != nil {
 			log.Print(err)
@@ -65,12 +65,12 @@ func (seg *Segmentation) GetSegments(tag string, data map[string]interface{}) ([
 				segments = append(segments, segment)
 			}
 
-			result, err := expression.execute(segment.ByteCode, env)
+			result, err := expr.Run(segment.ByteCode.(*vm.Program), env)
 			if err != nil {
 				return nil, err
 			}
 
-			if result {
+			if result.(bool) {
 				segments = append(segments, segment)
 			}
 		}
