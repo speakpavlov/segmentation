@@ -21,6 +21,9 @@ Content-Type: application/json
   "tag_id": "tag_1",
   "segments": [
     {
+      "expression": "Curl(\"http://localhost:9090/api/v1/purchase\") == 257",
+      "value": "{\"key\":257}"
+    },{
       "expression": "Level > 1 && Level < 10 && GPS == 1 && UVS == 5",
       "value": "{\"key\":1}"
     },

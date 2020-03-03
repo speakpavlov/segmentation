@@ -63,6 +63,9 @@ func (seg *Segmentation) GetSegments(tag string, data map[string]interface{}) ([
 			//segment without rules
 			if segment.ByteCode == nil {
 				segments = append(segments, segment)
+
+				//PoC: return first
+				return segments, nil
 			}
 
 			result, err := expr.Run(segment.ByteCode.(*vm.Program), env)
@@ -72,6 +75,9 @@ func (seg *Segmentation) GetSegments(tag string, data map[string]interface{}) ([
 
 			if result.(bool) {
 				segments = append(segments, segment)
+
+				//PoC: return first
+				return segments, nil
 			}
 		}
 	}
