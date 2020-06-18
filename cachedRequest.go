@@ -12,15 +12,21 @@ type HttpResponse struct {
 	Response interface{} `json:"response"`
 }
 
-func (cache CachedRequest) curl(url string) interface{} {
-	if value, ok := cache[url]; ok {
+func (cachedRequest CachedRequest) makeCachedRequest(url string) interface{} {
+	//if exist in cachedRequest
+	if value, ok := cachedRequest[url]; ok {
 		return value
 	}
 
-	//make request
+	cachedRequest[url] = makeRequest(url)
+
+	return cachedRequest[url]
+}
+
+func makeRequest(url string) interface{} {
 	response, err := http.Get(url)
 	if err != nil {
-		//todo log
+		return nil
 	}
 	defer response.Body.Close()
 
@@ -37,7 +43,5 @@ func (cache CachedRequest) curl(url string) interface{} {
 	}
 
 	//set to cache
-	cache[url] = resp.Response
-
 	return resp.Response
 }

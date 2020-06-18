@@ -21,29 +21,29 @@ Content-Type: application/json
   "tag_id": "tag_1",
   "segments": [
     {
-      "expression": "Curl(\"http://localhost:9090/api/v1/purchase\") == 257",
-      "value": "{\"key\":257}"
+      "expression": "GetRequest(\"http://localhost:9090/api/v1/status\") == 'OK'",
+      "value": "{\"key\":\"OK\"}"
     },{
       "expression": "Level > 1 && Level < 10 && GPS == 1 && UVS == 5",
       "value": "{\"key\":1}"
     },
     {
-      "expression": "Curl(\"http://localhost:9090/api/v1/purchase\") == 257",
+      "expression": "GetRequest(\"http://localhost:9090/api/v1/status\") == 257",
       "value": "{\"key\":257}"
     },
     {
-      "expression": "Curl(\"http://localhost:9090/api/v1/purchase\") == 256",
+      "expression": "GetRequest(\"http://localhost:9090/api/v1/status\") == 256",
       "value": "{\"key\":256}"
     },
     {
-      "expression": "Curl(\"http://localhost:9090/api/v1/purchase\") == 256",
+      "expression": "GetRequest(\"http://localhost:9090/api/v1/status\") == 256",
       "value": "{\"key\":256}"
     }
   ]
 }
 
 ###
-PUT http://localhost:9090/api/v1/purchase
+PUT http://localhost:9090/api/v1/status
 Accept: application/json
 
 ###

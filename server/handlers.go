@@ -25,10 +25,12 @@ type SegmentationGetRequest struct {
 	Data  map[string]interface{} `json:"data"`
 }
 
-//test handler
-func purchaseHandler(l *log.Logger) http.Handler {
+//status handler
+func statusHandler(l *log.Logger) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		writeSuccess(w, l, 257)
+		l.Print(r.RequestURI)
+
+		writeSuccess(w, l, "OK")
 	})
 }
 

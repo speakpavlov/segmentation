@@ -16,7 +16,7 @@ const (
 
 	//path
 	segmentationPath = apiBasePath + "segmentation"
-	purchasePath     = apiBasePath + "purchase"
+	statusPath       = apiBasePath + "status"
 )
 
 var (
@@ -41,7 +41,7 @@ func main() {
 	initializeSeg(logger)
 
 	http.Handle(segmentationPath, segmentationHandler(logger))
-	http.Handle(purchasePath, purchaseHandler(logger))
+	http.Handle(statusPath, statusHandler(logger))
 	logger.Printf("starting sever on :%d", port)
 
 	strPort := ":" + strconv.Itoa(port)
