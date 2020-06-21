@@ -5,7 +5,7 @@ import (
 )
 
 func TestSegmentation(t *testing.T) {
-	segmentation := NewSegmentation()
+	segmentation := NewSegmentationMap()
 
 	err := segmentation.UpdateSegments("seg_1", []Segment{
 		{Index: 1, Expression: "A == 1", Value: "1"},
@@ -35,7 +35,7 @@ func TestSegmentation(t *testing.T) {
 }
 
 func BenchmarkDbSegments(b *testing.B) {
-	db := NewSegmentation()
+	db := NewSegmentationMap()
 
 	err := db.UpdateSegments("1", []Segment{
 		{Index: 1, Expression: "A == 1", Value: "1"},
@@ -61,7 +61,7 @@ func BenchmarkDbSegments(b *testing.B) {
 }
 
 func BenchmarkDbSegmentsEmpty(b *testing.B) {
-	db := NewSegmentation()
+	db := NewSegmentationMap()
 
 	err := db.UpdateSegments("1", []Segment{
 		{Index: 1, Expression: "A == 1", Value: "1"},

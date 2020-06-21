@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"github.com/speakpavlov/segmentation"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -24,8 +23,9 @@ var (
 	logfile     string
 	dumpDirPath string
 
-	seg    *segmentation.Segmentation
-	logger *log.Logger
+	persistentStorage *segmentation.PersistentStorage
+	segmentationList  *segmentation.SegmentationMap
+	logger            *log.Logger
 )
 
 func init() {
@@ -38,7 +38,9 @@ func main() {
 	flag.Parse()
 
 	initLogger()
-	initializeSeg(logger)
+
+	persistentStorage = segmentation.NewPersistentStorage(dumpDirPath)
+	segmentationList = persistentStorage.Load()
 
 	http.Handle(segmentationPath, segmentationHandler(logger))
 	http.Handle(statusPath, statusHandler(logger))
@@ -57,35 +59,5 @@ func initLogger() {
 			panic(err)
 		}
 		logger = log.New(f, "", log.LstdFlags)
-	}
-}
-
-func initializeSeg(logger *log.Logger) {
-	seg = segmentation.NewSegmentation()
-
-	files, fErr := ioutil.ReadDir(dumpDirPath)
-	if fErr != nil {
-		logger.Print("Dump was not loaded " + fErr.Error())
-
-		os.Mkdir(dumpDirPath, 0777)
-	}
-
-	var segments []segmentation.Segment
-
-	for _, f := range files {
-		tagId := f.Name()
-		err := Load(dumpDirPath+tagId, &segments)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		sErr := seg.UpdateSegments(tagId, segments)
-		if sErr != nil {
-			log.Fatal(sErr)
-		}
-
-		seg.Segments[tagId] = segments
-
-		logger.Print("Tag: " + tagId + " was loaded")
 	}
 }

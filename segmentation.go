@@ -8,8 +8,8 @@ import (
 	"strconv"
 )
 
-//Segmentation struct
-type Segmentation struct {
+//SegmentationMap struct
+type SegmentationMap struct {
 	Segments map[string][]Segment
 }
 
@@ -21,11 +21,11 @@ type Segment struct {
 	ByteCode   interface{}
 }
 
-func NewSegmentation() *Segmentation {
-	return &Segmentation{}
+func NewSegmentationMap() *SegmentationMap {
+	return &SegmentationMap{}
 }
 
-func (seg *Segmentation) UpdateSegments(tag string, segments []Segment) error {
+func (seg *SegmentationMap) UpdateSegments(tag string, segments []Segment) error {
 	//compile expression
 	for i := range segments {
 		if segments[i].Expression == "" {
@@ -54,7 +54,7 @@ func (seg *Segmentation) UpdateSegments(tag string, segments []Segment) error {
 	return nil
 }
 
-func (seg *Segmentation) GetSegments(tag string, data map[string]interface{}) ([]Segment, error) {
+func (seg *SegmentationMap) GetSegments(tag string, data map[string]interface{}) ([]Segment, error) {
 	var segments []Segment
 	env := NewEnv(data)
 

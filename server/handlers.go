@@ -38,14 +38,14 @@ func segmentationHandler(l *log.Logger) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodPost:
-			postHandler(w, r, l)
+			loadSegmentationHandler(w, r, l)
 		case http.MethodPut:
-			putHandler(w, r, l)
+			importSegmentationHandler(w, r, l)
 		}
 	})
 }
 
-func putHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
+func importSegmentationHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 	entry, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		l.Print(err)
@@ -62,6 +62,7 @@ func putHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 		return
 	}
 
+	//translator start
 	var segments []segmentation.Segment
 
 	index := 0
@@ -74,13 +75,20 @@ func putHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 		index++
 	}
 
-	dErr := Save(dumpDirPath+segmentationInput.TagId, segments)
+	//seg := segmentation.SegmentationMap{
+	//	Segments: map[string][]segmentation.Segment{dumpDirPath + segmentationInput.TagId: segments},
+	//}
+	//translator end
+	//todo
+	//persistentStorage.Save(seg)
+
+	dErr := segmentation.Save(dumpDirPath+segmentationInput.TagId, segments)
 	if dErr != nil {
 		writeError(dErr, w, l, http.StatusInternalServerError)
 		return
 	}
 
-	sErr := seg.UpdateSegments(segmentationInput.TagId, segments)
+	sErr := segmentationList.UpdateSegments(segmentationInput.TagId, segments)
 	if sErr != nil {
 		writeError(sErr, w, l, http.StatusBadRequest)
 		return
@@ -89,7 +97,7 @@ func putHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 	writeSuccess(w, l, "OK")
 }
 
-func postHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
+func loadSegmentationHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 	entry, rErr := ioutil.ReadAll(r.Body)
 	if rErr != nil {
 		writeError(rErr, w, l, http.StatusBadRequest)
@@ -104,7 +112,7 @@ func postHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 		return
 	}
 
-	segments, sErr := seg.GetSegments(segmentationInput.TagId, segmentationInput.Data)
+	segments, sErr := segmentationList.GetSegments(segmentationInput.TagId, segmentationInput.Data)
 	if sErr != nil {
 		writeError(sErr, w, l, http.StatusBadRequest)
 		return

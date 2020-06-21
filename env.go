@@ -12,6 +12,5 @@ func NewEnv(env map[string]interface{}) Env {
 
 // Request func
 func (e Env) GetRequest(url string) interface{} {
-	//add request method
 	return e["cachedRequestObj"].(*CachedRequest).makeCachedRequest(url)
 }
