@@ -108,7 +108,8 @@ func loadSegmentationHandler(w http.ResponseWriter, r *http.Request, l *log.Logg
 
 func writeSuccess(w http.ResponseWriter, l *log.Logger, result interface{}) {
 	writeJSON(w, http.StatusOK, map[string]interface{}{
-		"response": result,
+		"result":   result,
+		"response": true,
 	})
 }
 
