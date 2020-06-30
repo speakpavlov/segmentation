@@ -11,24 +11,23 @@ type PersistentStorage struct {
 }
 
 func NewPersistentStorage(dumpDirPath string) *PersistentStorage {
+	os.Mkdir(dumpDirPath, 0777)
+
 	return &PersistentStorage{dumpDirPath}
 }
 
 func (s PersistentStorage) Load() *SegmentationMap {
 	seg := &SegmentationMap{}
-
-	files, fErr := ioutil.ReadDir(s.dumpDirPath)
-	if fErr != nil {
-		//logger.Print("Dump was not loaded " + fErr.Error())
-
-		os.Mkdir(s.dumpDirPath, 0777)
+	files, err := ioutil.ReadDir(s.dumpDirPath)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	var segments []Segment
+	var segments []string
 
 	for _, f := range files {
 		tagId := f.Name()
-		err := Load(s.dumpDirPath+tagId, &segments)
+		err := Load(s.dumpDirPath+"/"+tagId, &segments)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -38,14 +37,12 @@ func (s PersistentStorage) Load() *SegmentationMap {
 			log.Fatal(sErr)
 		}
 
-		seg.Segments[tagId] = segments
-
 		//logger.Print("Tag: " + tagId + " was loaded")
 	}
 
 	return seg
 }
 
-func (s PersistentStorage) Save(segmentation *SegmentationMap) {
-
+func (s PersistentStorage) SaveNewSegment(tagId string, segments []string) error {
+	return Save(s.dumpDirPath+"/"+tagId, segments)
 }

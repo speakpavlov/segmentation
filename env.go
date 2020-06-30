@@ -1,7 +1,6 @@
 package segmentation
 
 type Env map[string]interface{}
-type RequestFunc func(url string) interface{}
 
 func NewEnv(env map[string]interface{}) Env {
 	//init fresh cachedRequest

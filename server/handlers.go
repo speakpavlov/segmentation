@@ -3,21 +3,14 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"github.com/speakpavlov/segmentation"
 	"io/ioutil"
 	"log"
 	"net/http"
 )
 
 type SegmentationPutInput struct {
-	TagId    string    `json:"tag_id"`
-	Segments []Segment `json:"segments"`
-}
-
-//Segment struct
-type Segment struct {
-	Expression string `json:"expression"`
-	Value      string `json:"value"`
+	TagId       string   `json:"tag_id"`
+	Expressions []string `json:"expression"`
 }
 
 type SegmentationGetRequest struct {
@@ -28,8 +21,6 @@ type SegmentationGetRequest struct {
 //status handler
 func statusHandler(l *log.Logger) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		l.Print(r.RequestURI)
-
 		writeSuccess(w, l, "OK")
 	})
 }
@@ -62,35 +53,15 @@ func importSegmentationHandler(w http.ResponseWriter, r *http.Request, l *log.Lo
 		return
 	}
 
-	//translator start
-	var segments []segmentation.Segment
-
-	index := 0
-	for _, v := range segmentationInput.Segments {
-		segments = append(segments, segmentation.Segment{
-			Index:      index,
-			Expression: v.Expression,
-			Value:      v.Value,
-		})
-		index++
-	}
-
-	//seg := segmentation.SegmentationMap{
-	//	Segments: map[string][]segmentation.Segment{dumpDirPath + segmentationInput.TagId: segments},
-	//}
-	//translator end
-	//todo
-	//persistentStorage.Save(seg)
-
-	dErr := segmentation.Save(dumpDirPath+segmentationInput.TagId, segments)
-	if dErr != nil {
-		writeError(dErr, w, l, http.StatusInternalServerError)
+	sErr := segmentationList.UpdateSegments(segmentationInput.TagId, segmentationInput.Expressions)
+	if sErr != nil {
+		writeError(sErr, w, l, http.StatusBadRequest)
 		return
 	}
 
-	sErr := segmentationList.UpdateSegments(segmentationInput.TagId, segments)
-	if sErr != nil {
-		writeError(sErr, w, l, http.StatusBadRequest)
+	dErr := persistentStorage.SaveNewSegment(segmentationInput.TagId, segmentationInput.Segments)
+	if dErr != nil {
+		writeError(dErr, w, l, http.StatusInternalServerError)
 		return
 	}
 
@@ -119,25 +90,24 @@ func loadSegmentationHandler(w http.ResponseWriter, r *http.Request, l *log.Logg
 	}
 
 	if len(segments) == 0 {
-		writeError(errors.New("Segments was not found."), w, l, http.StatusNotFound)
+		writeError(errors.New("byteCodes was not found."), w, l, http.StatusNotFound)
 		return
 	}
 
-	var result []map[string]interface{}
-	for _, seg := range segments {
-		result = append(result, map[string]interface{}{
-			"index": seg.Index,
-			"value": seg.Value,
-		})
-	}
+	//var result []map[string]interface{}
+	//for _, seg := range segments {
+	//	result = append(result, map[string]interface{}{
+	//		"index": seg,
+	//	})
+	//}
 
-	writeSuccess(w, l, result)
+	writeSuccess(w, l, segments)
 }
 
 /////
 
 func writeSuccess(w http.ResponseWriter, l *log.Logger, result interface{}) {
-	writeJSON(w, map[string]interface{}{
+	writeJSON(w, http.StatusOK, map[string]interface{}{
 		"response": result,
 	})
 }
@@ -147,15 +117,15 @@ func writeError(err error, w http.ResponseWriter, l *log.Logger, request int) {
 		l.Print(err)
 	}
 
-	w.WriteHeader(request)
-
-	writeJSON(w, map[string]interface{}{
+	writeJSON(w, request, map[string]interface{}{
 		"response": false,
 		"error":    err.Error(),
 	})
 }
 
-func writeJSON(w http.ResponseWriter, data map[string]interface{}) {
+func writeJSON(w http.ResponseWriter, code int, data map[string]interface{}) {
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+
 	json.NewEncoder(w).Encode(data)
 }

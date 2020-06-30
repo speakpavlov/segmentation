@@ -30,7 +30,7 @@ var (
 
 func init() {
 	flag.StringVar(&logfile, "logfile", "", "Location of the logfile")
-	flag.StringVar(&dumpDirPath, "dumpDirPath", "./dump/", "Dump dir")
+	flag.StringVar(&dumpDirPath, "dumpDirPath", "./dump", "Dump dir")
 	flag.IntVar(&port, "port", 9090, "The port to listen on.")
 }
 
