@@ -60,8 +60,6 @@ func (seg *SegmentationMap) GetSegments(tag string, data map[string]interface{})
 
 	if segmentation, ok := seg.byteCodes[tag]; ok {
 		for index, segment := range segmentation {
-			//segment without rules
-
 			result, err := expr.Run(segment, env)
 			if err != nil {
 				return nil, err

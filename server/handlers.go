@@ -10,7 +10,7 @@ import (
 
 type SegmentationPutInput struct {
 	TagId       string   `json:"tag_id"`
-	Expressions []string `json:"expression"`
+	Expressions []string `json:"expressions"`
 }
 
 type SegmentationGetRequest struct {
@@ -59,7 +59,7 @@ func importSegmentationHandler(w http.ResponseWriter, r *http.Request, l *log.Lo
 		return
 	}
 
-	dErr := persistentStorage.SaveNewSegment(segmentationInput.TagId, segmentationInput.Segments)
+	dErr := persistentStorage.SaveNewSegment(segmentationInput.TagId, segmentationInput.Expressions)
 	if dErr != nil {
 		writeError(dErr, w, l, http.StatusInternalServerError)
 		return
@@ -90,7 +90,7 @@ func loadSegmentationHandler(w http.ResponseWriter, r *http.Request, l *log.Logg
 	}
 
 	if len(segments) == 0 {
-		writeError(errors.New("byteCodes was not found."), w, l, http.StatusNotFound)
+		writeError(errors.New("Segmentation was not found."), w, l, http.StatusNotFound)
 		return
 	}
 
