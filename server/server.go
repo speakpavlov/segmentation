@@ -38,16 +38,27 @@ func main() {
 	flag.Parse()
 
 	initLogger()
-
-	persistentStorage = segmentation.NewPersistentStorage(dumpDirPath)
-	segmentationList = persistentStorage.Load()
+	loadSegmentation()
 
 	http.Handle(segmentationPath, segmentationHandler(logger))
 	http.Handle(statusPath, statusHandler(logger))
 	logger.Printf("starting sever on :%d", port)
 
 	strPort := ":" + strconv.Itoa(port)
-	log.Fatal("ListenAndServe: ", http.ListenAndServe(strPort, nil))
+	logger.Fatal("ListenAndServe: ", http.ListenAndServe(strPort, nil))
+}
+
+func loadSegmentation() {
+	persistentStorage = segmentation.NewPersistentStorage(dumpDirPath)
+	segmentationList = &segmentation.SegmentationMap{}
+
+	for tagId, expressions := range persistentStorage.Load() {
+		sErr := segmentationList.UpdateSegments(tagId, expressions)
+		if sErr != nil {
+			logger.Fatal(sErr)
+		}
+		logger.Print("Tag: " + tagId + " was loaded")
+	}
 }
 
 func initLogger() {

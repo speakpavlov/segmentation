@@ -16,31 +16,26 @@ func NewPersistentStorage(dumpDirPath string) *PersistentStorage {
 	return &PersistentStorage{dumpDirPath}
 }
 
-func (s PersistentStorage) Load() *SegmentationMap {
-	seg := &SegmentationMap{}
+func (s PersistentStorage) Load() map[string][]string {
 	files, err := ioutil.ReadDir(s.dumpDirPath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var segments []string
+	segmentation := make(map[string][]string)
 
 	for _, f := range files {
+		var expressions []string
 		tagId := f.Name()
-		err := Load(s.dumpDirPath+"/"+tagId, &segments)
+		err := Load(s.dumpDirPath+"/"+tagId, &expressions)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		sErr := seg.UpdateSegments(tagId, segments)
-		if sErr != nil {
-			log.Fatal(sErr)
-		}
-
-		//logger.Print("Tag: " + tagId + " was loaded")
+		segmentation[tagId] = expressions
 	}
 
-	return seg
+	return segmentation
 }
 
 func (s PersistentStorage) SaveNewSegment(tagId string, segments []string) error {
