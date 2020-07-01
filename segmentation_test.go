@@ -4,80 +4,63 @@ import (
 	"testing"
 )
 
-func TestSegmentation(t *testing.T) {
-	segmentation := NewSegmentation()
-
-	err := segmentation.UpdateSegments("seg_1", []Segment{
-		{Index: 1, Expression: "A == 1", Value: "1"},
-		{Index: 2, Expression: "A == 2", Value: "3"},
-		{Index: 3, Expression: "A == 3", Value: "3"},
-	})
-
-	if err != nil {
-		t.Errorf("Publish was not unsuccessefully")
-	}
+func TestSegmentationExist(t *testing.T) {
+	segmentation := initBaseSegmentation(t)
 
 	_, sErr := segmentation.GetSegments("seg_0", map[string]interface{}{"A": 1})
 
 	if sErr != nil {
 		t.Errorf("Id seg_0 has segments")
 	}
+}
 
-	segment2, err2 := segmentation.GetSegments("seg_1", map[string]interface{}{"A": 1})
+func TestSegmentationIndex(t *testing.T) {
+	segmentation := initBaseSegmentation(t)
 
-	if err2 != nil || segment2 == nil {
+	segment, err := segmentation.GetSegments("seg_1", map[string]interface{}{"A": 2})
+
+	if err != nil {
 		t.Error("seg_1 has not segments")
 	}
 
-	if len(segment2) != 1 {
-		t.Error("Segments are incorrect", len(segment2))
+	if segment == nil || segment[0] != 1 {
+		t.Error("seg_1 with index 1 has incorrect value")
+	}
+
+	if len(segment) != 2 {
+		t.Error("byteCodes are incorrect", len(segment))
+	}
+}
+func TestSegmentationEmpty(t *testing.T) {
+	segmentation := initBaseSegmentation(t)
+
+	segment, err := segmentation.GetSegments("seg_1", map[string]interface{}{"A": 5})
+
+	if err != nil {
+		t.Error("seg_1 has not segments")
+	}
+
+	if segment == nil || segment[0] != 2 {
+		t.Error("seg_1 with index 2 has incorrect value")
+	}
+
+	if len(segment) != 1 {
+		t.Error("byteCodes are incorrect", len(segment))
 	}
 }
 
-func BenchmarkDbSegments(b *testing.B) {
-	db := NewSegmentation()
+func initBaseSegmentation(t *testing.T) *SegmentationMap {
+	segmentation := NewSegmentationMap()
 
-	err := db.UpdateSegments("1", []Segment{
-		{Index: 1, Expression: "A == 1", Value: "1"},
-		{Index: 2, Expression: "A == 2", Value: "3"},
-		{Index: 3, Expression: "A == 3", Value: "3"},
+	err := segmentation.UpdateSegments("seg_1", []string{
+		"A == 1",
+		"A == 2",
+		"",
 	})
 
 	if err != nil {
-		b.Errorf("Publish was not unsuccessefully")
+		t.Errorf("Publish was not unsuccessefully")
 	}
 
-	for i := 0; i < b.N; i++ {
-		segment2, err2 := db.GetSegments("1", map[string]interface{}{"A": 1})
-
-		if err2 != nil || segment2 == nil {
-			b.Error("Id 1 has not segments")
-		}
-
-		if segment2 != nil && segment2[0].Value != "1" {
-			b.Error("Segment Id 1 is incorrect")
-		}
-	}
-}
-
-func BenchmarkDbSegmentsEmpty(b *testing.B) {
-	db := NewSegmentation()
-
-	err := db.UpdateSegments("1", []Segment{
-		{Index: 1, Expression: "A == 1", Value: "1"},
-		{Index: 2, Expression: "A == 2", Value: "3"},
-		{Index: 3, Expression: "A == 3", Value: "3"},
-	})
-
-	if err != nil {
-		b.Errorf("Publish was not unsuccessefully")
-	}
-
-	for i := 0; i < b.N; i++ {
-		segments, _ := db.GetSegments("0", map[string]interface{}{"A": 1})
-
-		if len(segments) > 0 {
-			b.Errorf("Id 0 has segments")
-		}
-	}
+	return segmentation
 }

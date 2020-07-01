@@ -3,21 +3,14 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"github.com/speakpavlov/segmentation"
 	"io/ioutil"
 	"log"
 	"net/http"
 )
 
 type SegmentationPutInput struct {
-	TagId    string    `json:"tag_id"`
-	Segments []Segment `json:"segments"`
-}
-
-//Segment struct
-type Segment struct {
-	Expression string `json:"expression"`
-	Value      string `json:"value"`
+	TagId       string   `json:"tag_id"`
+	Expressions []string `json:"expressions"`
 }
 
 type SegmentationGetRequest struct {
@@ -28,8 +21,6 @@ type SegmentationGetRequest struct {
 //status handler
 func statusHandler(l *log.Logger) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		l.Print(r.RequestURI)
-
 		writeSuccess(w, l, "OK")
 	})
 }
@@ -38,14 +29,14 @@ func segmentationHandler(l *log.Logger) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodPost:
-			postHandler(w, r, l)
+			loadSegmentationHandler(w, r, l)
 		case http.MethodPut:
-			putHandler(w, r, l)
+			importSegmentationHandler(w, r, l)
 		}
 	})
 }
 
-func putHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
+func importSegmentationHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 	entry, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		l.Print(err)
@@ -62,34 +53,22 @@ func putHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 		return
 	}
 
-	var segments []segmentation.Segment
-
-	index := 0
-	for _, v := range segmentationInput.Segments {
-		segments = append(segments, segmentation.Segment{
-			Index:      index,
-			Expression: v.Expression,
-			Value:      v.Value,
-		})
-		index++
-	}
-
-	dErr := Save(dumpDirPath+segmentationInput.TagId, segments)
-	if dErr != nil {
-		writeError(dErr, w, l, http.StatusInternalServerError)
+	sErr := segmentationList.UpdateSegments(segmentationInput.TagId, segmentationInput.Expressions)
+	if sErr != nil {
+		writeError(sErr, w, l, http.StatusBadRequest)
 		return
 	}
 
-	sErr := seg.UpdateSegments(segmentationInput.TagId, segments)
-	if sErr != nil {
-		writeError(sErr, w, l, http.StatusBadRequest)
+	dErr := persistentStorage.SaveNewSegment(segmentationInput.TagId, segmentationInput.Expressions)
+	if dErr != nil {
+		writeError(dErr, w, l, http.StatusInternalServerError)
 		return
 	}
 
 	writeSuccess(w, l, "OK")
 }
 
-func postHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
+func loadSegmentationHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 	entry, rErr := ioutil.ReadAll(r.Body)
 	if rErr != nil {
 		writeError(rErr, w, l, http.StatusBadRequest)
@@ -104,33 +83,33 @@ func postHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
 		return
 	}
 
-	segments, sErr := seg.GetSegments(segmentationInput.TagId, segmentationInput.Data)
+	segments, sErr := segmentationList.GetSegments(segmentationInput.TagId, segmentationInput.Data)
 	if sErr != nil {
 		writeError(sErr, w, l, http.StatusBadRequest)
 		return
 	}
 
 	if len(segments) == 0 {
-		writeError(errors.New("Segments was not found."), w, l, http.StatusNotFound)
+		writeError(errors.New("Segmentation was not found."), w, l, http.StatusNotFound)
 		return
 	}
 
-	var result []map[string]interface{}
-	for _, seg := range segments {
-		result = append(result, map[string]interface{}{
-			"index": seg.Index,
-			"value": seg.Value,
-		})
-	}
+	//var result []map[string]interface{}
+	//for _, seg := range segments {
+	//	result = append(result, map[string]interface{}{
+	//		"index": seg,
+	//	})
+	//}
 
-	writeSuccess(w, l, result)
+	writeSuccess(w, l, segments)
 }
 
 /////
 
 func writeSuccess(w http.ResponseWriter, l *log.Logger, result interface{}) {
-	writeJSON(w, map[string]interface{}{
-		"response": result,
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"result":   result,
+		"response": true,
 	})
 }
 
@@ -139,15 +118,15 @@ func writeError(err error, w http.ResponseWriter, l *log.Logger, request int) {
 		l.Print(err)
 	}
 
-	w.WriteHeader(request)
-
-	writeJSON(w, map[string]interface{}{
+	writeJSON(w, request, map[string]interface{}{
 		"response": false,
 		"error":    err.Error(),
 	})
 }
 
-func writeJSON(w http.ResponseWriter, data map[string]interface{}) {
+func writeJSON(w http.ResponseWriter, code int, data map[string]interface{}) {
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+
 	json.NewEncoder(w).Encode(data)
 }
