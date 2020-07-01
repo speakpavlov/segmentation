@@ -3,13 +3,14 @@ package segmentation
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
 type CachedRequest map[string]interface{}
 
 type HttpResponse struct {
-	Response interface{} `json:"response"`
+	Result interface{} `json:"result"`
 }
 
 func (cachedRequest CachedRequest) makeCachedRequest(url string) interface{} {
@@ -33,15 +34,18 @@ func makeRequest(url string) interface{} {
 	body, err := ioutil.ReadAll(response.Body)
 
 	if err != nil {
-		panic(err)
+		log.Print("Cannot load, url: " + url + ", err: " + err.Error())
+
+		return false
 	}
 
 	var resp HttpResponse
 	err = json.Unmarshal(body, &resp)
 	if err != nil {
-		panic(err)
+		log.Print("Cannot unmarshal, url: " + url + ", err: " + err.Error())
+
+		return false
 	}
 
-	//set to cache
-	return resp.Response
+	return resp.Result
 }
