@@ -94,13 +94,6 @@ func loadSegmentationHandler(w http.ResponseWriter, r *http.Request, l *log.Logg
 		return
 	}
 
-	//var result []map[string]interface{}
-	//for _, seg := range segments {
-	//	result = append(result, map[string]interface{}{
-	//		"index": seg,
-	//	})
-	//}
-
 	writeSuccess(w, l, segments)
 }
 

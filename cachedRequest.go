@@ -9,7 +9,7 @@ import (
 type CachedRequest map[string]interface{}
 
 type HttpResponse struct {
-	Response interface{} `json:"response"`
+	Result interface{} `json:"result"`
 }
 
 func (cachedRequest CachedRequest) makeCachedRequest(url string) interface{} {
@@ -18,12 +18,12 @@ func (cachedRequest CachedRequest) makeCachedRequest(url string) interface{} {
 		return value
 	}
 
-	cachedRequest[url] = makeRequest(url)
+	cachedRequest[url] = makeGetRequest(url)
 
 	return cachedRequest[url]
 }
 
-func makeRequest(url string) interface{} {
+func makeGetRequest(url string) interface{} {
 	response, err := http.Get(url)
 	if err != nil {
 		return nil
@@ -33,15 +33,14 @@ func makeRequest(url string) interface{} {
 	body, err := ioutil.ReadAll(response.Body)
 
 	if err != nil {
-		panic(err)
+		panic("Cannot make request: " + url + ", err:" + err.Error())
 	}
 
 	var resp HttpResponse
 	err = json.Unmarshal(body, &resp)
 	if err != nil {
-		panic(err)
+		panic("Cannot unmarshal: " + url + ", err:" + err.Error())
 	}
 
-	//set to cache
-	return resp.Response
+	return resp.Result
 }

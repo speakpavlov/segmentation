@@ -7,7 +7,8 @@ Content-Type: application/json
   "data": {
     "Level": 2,
     "GPS": 1,
-    "UVS": 5
+    "UVS": 5,
+    "Variant": "a"
   }
 }
 
@@ -20,9 +21,10 @@ Content-Type: application/json
 {
   "tag_id": "tag_1",
   "expressions": [
+    "Variant in [\"a\",\"b\",\"c\"]",
+    "GetRequest(\"http://localhost:9090/api/v1/status\") == 'OK'",
     "GetRequest(\"http://localhost:9090/api/v1/status\") == 'OK'",
     "Level > 1 && Level < 10 && GPS == 1 && UVS == 5",
-    "GetRequest(\"http://localhost:9090/api/v1/status\") == 257",
     "GetRequest(\"http://localhost:9090/api/v1/status\") == 256",
     "UVS == 5"
   ]
