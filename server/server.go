@@ -50,7 +50,7 @@ func main() {
 
 func loadSegmentation() {
 	persistentStorage = segmentation.NewPersistentStorage(dumpDirPath)
-	segmentationList = &segmentation.SegmentationMap{}
+	segmentationList = segmentation.NewSegmentationMap()
 
 	for tagId, expressions := range persistentStorage.Load() {
 		sErr := segmentationList.UpdateSegments(tagId, expressions)

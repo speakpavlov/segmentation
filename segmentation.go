@@ -62,7 +62,12 @@ func (seg *SegmentationMap) GetSegments(tag string, data map[string]interface{})
 		for index, segment := range segmentation {
 			result, err := expr.Run(segment, env)
 			if err != nil {
-				return nil, err
+				log.Print(
+					"[ERROR][Skip segment] Tag: " + tag +
+						", segment index: " + strconv.Itoa(index) +
+						", segment expression: " + segment.Source.Content() +
+						", err: " + err.Error())
+				continue
 			}
 
 			if result.(bool) {
