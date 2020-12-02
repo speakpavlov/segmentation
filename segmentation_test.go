@@ -49,6 +49,18 @@ func TestSegmentationEmpty(t *testing.T) {
 	}
 }
 
+func TestNotCompiledExpression(t *testing.T) {
+	segmentation := NewSegmentationMap()
+
+	err := segmentation.UpdateSegments("seg_1", []string{
+		"a = 1",
+	})
+
+	if err == nil {
+		t.Errorf("Incorrect expression should case error")
+	}
+}
+
 func initBaseSegmentation(t *testing.T) *SegmentationMap {
 	segmentation := NewSegmentationMap()
 
