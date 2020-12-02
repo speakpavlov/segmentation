@@ -56,11 +56,10 @@ func (seg *SegmentationMap) UpdateSegments(tag string, expressions []string) err
 
 func (seg *SegmentationMap) GetSegments(tag string, data map[string]interface{}) ([]int, error) {
 	var segmentIndexes []int
-	env := NewEnv(data)
 
 	if segmentation, ok := seg.byteCodes[tag]; ok {
 		for index, segment := range segmentation {
-			result, err := expr.Run(segment, env)
+			result, err := expr.Run(segment, data)
 			if err != nil {
 				log.Print(
 					"[ERROR][Skip segment] Tag: " + tag +

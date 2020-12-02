@@ -21,7 +21,7 @@ type SegmentationGetRequest struct {
 //status handler
 func statusHandler(l *log.Logger) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		writeSuccess(w, l, "OK")
+		writeSuccess(w, "OK")
 	})
 }
 
@@ -65,7 +65,7 @@ func importSegmentationHandler(w http.ResponseWriter, r *http.Request, l *log.Lo
 		return
 	}
 
-	writeSuccess(w, l, "OK")
+	writeSuccess(w, "OK")
 }
 
 func loadSegmentationHandler(w http.ResponseWriter, r *http.Request, l *log.Logger) {
@@ -90,16 +90,16 @@ func loadSegmentationHandler(w http.ResponseWriter, r *http.Request, l *log.Logg
 	}
 
 	if len(segments) == 0 {
-		writeError(errors.New("Segmentation was not found."), w, l, http.StatusNotFound)
+		writeError(errors.New("segmentation was not found"), w, l, http.StatusNotFound)
 		return
 	}
 
-	writeSuccess(w, l, segments)
+	writeSuccess(w, segments)
 }
 
 /////
 
-func writeSuccess(w http.ResponseWriter, l *log.Logger, result interface{}) {
+func writeSuccess(w http.ResponseWriter, result interface{}) {
 	writeJSON(w, http.StatusOK, map[string]interface{}{
 		"result":   result,
 		"response": true,
